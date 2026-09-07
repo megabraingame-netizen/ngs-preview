@@ -1,0 +1,29 @@
+name: NamiWin CRM v2 Windows
+on:
+  push:
+    branches: [namiwin-crm-v2]
+    paths: ['crm-v2/**','.github/workflows/namiwin-crm-v2-windows.yml']
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+      - name: Build EXE
+        run: msbuild crm-v2/windows/NamiWinCRM.csproj /p:Configuration=Release /p:OutputPath=${{ github.workspace }}\out
+      - name: Assemble portable app
+        shell: powershell
+        run: |
+          New-Item -ItemType Directory -Force package\web | Out-Null
+          Copy-Item out\NamiWin-CRM-v2.exe package\NamiWin-CRM-v2.exe
+          Copy-Item crm-v2\web\* package\web -Recurse -Force
+          if (!(Test-Path package\NamiWin-CRM-v2.exe)) { throw 'EXE missing' }
+          if (!(Test-Path package\web\index.html)) { throw 'web assets missing' }
+      - name: Upload Windows app
+        uses: actions/upload-artifact@v4
+        with:
+          name: NamiWin-CRM-v2-Windows
+          path: package
+          retention-days: 30
