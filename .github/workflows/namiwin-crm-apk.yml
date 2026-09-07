@@ -1,0 +1,31 @@
+name: NamiWin CRM APK
+on:
+  push:
+    branches: [namiwin-crm-v1]
+    paths:
+      - 'crm-android/**'
+      - '.github/workflows/namiwin-crm-apk.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.10.2'
+      - name: Build APK
+        working-directory: crm-android
+        run: gradle assembleDebug --stacktrace
+      - name: Rename APK
+        run: cp crm-android/app/build/outputs/apk/debug/app-debug.apk NamiWin-CRM-Android.apk
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NamiWin-CRM-Android
+          path: NamiWin-CRM-Android.apk
+          retention-days: 30
