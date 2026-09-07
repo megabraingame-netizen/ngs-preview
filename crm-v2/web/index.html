@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NamiWin CRM v2</title>
+<link rel="stylesheet" href="app.css" />
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">NW</div><div><b>NAMI WIN</b><span>CRM v2</span></div></div>
+    <nav id="nav">
+      <button class="nav-item active" data-view="dashboard">⌂ <span>مرکز فرمان</span></button>
+      <button class="nav-item" data-view="pipeline">◫ <span>پایپ‌لاین فروش</span></button>
+      <button class="nav-item" data-view="customers">◎ <span>مشتریان</span></button>
+      <button class="nav-item" data-view="projects">▦ <span>پروژه‌ها</span></button>
+      <button class="nav-item" data-view="activities">✓ <span>پیگیری‌ها</span></button>
+      <button class="nav-item" data-view="reports">⌁ <span>گزارش‌ها</span></button>
+    </nav>
+    <div class="sidebar-footer"><div class="avatar">ا</div><div><b>امید نصر</b><span>مدیر بازرگانی و فروش</span></div></div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="title-wrap"><h1 id="pageTitle">مرکز فرمان فروش</h1><p id="pageSub">تصمیم‌های امروز، بدون گم‌شدن هیچ پیگیری</p></div>
+      <div class="top-actions">
+        <label class="global-search">⌕<input id="search" placeholder="جستجوی مشتری، پروژه، موبایل..." /></label>
+        <button class="icon-btn" title="اعلان‌ها">♢<span class="dot"></span></button>
+        <button class="primary" id="quickAdd">＋ ثبت سریع</button>
+      </div>
+    </header>
+
+    <section id="dashboard" class="view active">
+      <div class="kpi-grid" id="kpis"></div>
+      <div class="dashboard-grid">
+        <section class="panel span-2">
+          <div class="panel-head"><div><h2>فرصت‌های فروش</h2><p>وضعیت لحظه‌ای پایپ‌لاین</p></div><button class="text-btn" data-goto="pipeline">مشاهده پایپ‌لاین ←</button></div>
+          <div class="mini-pipeline" id="miniPipeline"></div>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><div><h2>اقدام‌های امروز</h2><p>پیگیری‌های اولویت‌دار</p></div><span class="pill danger" id="overdueCount">۰ عقب‌افتاده</span></div>
+          <div class="activity-list" id="todayActivities"></div>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><div><h2>فرصت‌های در خطر</h2><p>بدون فعالیت یا Next Action</p></div></div>
+          <div id="riskList" class="risk-list"></div>
+        </section>
+        <section class="panel span-2">
+          <div class="panel-head"><div><h2>پروژه‌های فعال</h2><p>فروش برنده‌شده که وارد اجرا شده</p></div><button class="text-btn" data-goto="projects">همه پروژه‌ها ←</button></div>
+          <div class="project-strip" id="projectStrip"></div>
+        </section>
+      </div>
+    </section>
+
+    <section id="pipeline" class="view">
+      <div class="toolbar"><div class="segmented"><button class="active">همه</button><button>داغ</button><button>نیازمند پیگیری</button></div><div class="toolbar-right"><span id="pipelineTotal" class="muted"></span><button class="secondary" id="newOpportunity">＋ فرصت جدید</button></div></div>
+      <div class="kanban" id="kanban"></div>
+    </section>
+
+    <section id="customers" class="view">
+      <div class="split-layout">
+        <section class="panel list-panel"><div class="panel-head"><div><h2>مشتریان و شرکت‌ها</h2><p>پرونده ۳۶۰ درجه</p></div><button class="secondary" id="newCustomer">＋ مشتری</button></div><div id="customerList" class="customer-list"></div></section>
+        <section class="panel detail-panel" id="customer360"></section>
+      </div>
+    </section>
+
+    <section id="projects" class="view">
+      <div class="panel"><div class="panel-head"><div><h2>پروژه‌های اجرایی</h2><p>تایم‌لاین فروش از تایم‌لاین اجرا جداست</p></div></div><div id="projectsGrid" class="projects-grid"></div></div>
+    </section>
+
+    <section id="activities" class="view">
+      <div class="panel"><div class="panel-head"><div><h2>مرکز پیگیری</h2><p>هر فرصت باز باید Next Action داشته باشد</p></div></div><div id="activitiesTable"></div></div>
+    </section>
+
+    <section id="reports" class="view">
+      <div class="panel empty-state"><div class="empty-icon">⌁</div><h2>گزارش مدیریتی</h2><p>Win Rate، Weighted Pipeline، علت باخت، زمان چرخه فروش و عملکرد منابع سرنخ در فاز بعدی همین v2 فعال می‌شود.</p></div>
+    </section>
+  </main>
+</div>
+
+<div class="modal-backdrop hidden" id="modalBackdrop">
+  <div class="modal"><button class="modal-close" id="modalClose">×</button><div id="modalContent"></div></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
