@@ -26,9 +26,9 @@ jobs:
       - name: Build release APK
         run: gradle -p A26_SalesGateway :app:assembleRelease --stacktrace
       - name: Rename APK
-        run: cp A26_SalesGateway/app/build/outputs/apk/release/app-release.apk NamiWin_A26_SalesGateway_v0.4_Live_AI_Call_Lab.apk
+        run: cp A26_SalesGateway/app/build/outputs/apk/release/app-release.apk NamiWin_A26_SalesGateway_v0.5_VoIP_AI_Call.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: NamiWin-A26-SalesGateway-v0.4-Live-AI-Call-Lab
-          path: NamiWin_A26_SalesGateway_v0.4_Live_AI_Call_Lab.apk
+          name: NamiWin-A26-SalesGateway-v0.5-VoIP-AI-Call
+          path: NamiWin_A26_SalesGateway_v0.5_VoIP_AI_Call.apk
           if-no-files-found: error
