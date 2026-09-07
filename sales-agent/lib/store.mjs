@@ -8,13 +8,18 @@ const file = path.join(dataDir, 'db.json');
 function ensure() {
   fs.mkdirSync(dataDir, { recursive: true });
   if (!fs.existsSync(file)) {
-    fs.writeFileSync(file, JSON.stringify({ leads: [], calls: [], settings: { dailyLimit: 80 } }, null, 2), 'utf8');
+    fs.writeFileSync(file, JSON.stringify({ leads: [], calls: [], mobileCommands: [], settings: { dailyLimit: 80 } }, null, 2), 'utf8');
   }
 }
 
 function read() {
   ensure();
-  return JSON.parse(fs.readFileSync(file, 'utf8'));
+  const db = JSON.parse(fs.readFileSync(file, 'utf8'));
+  if (!Array.isArray(db.leads)) db.leads = [];
+  if (!Array.isArray(db.calls)) db.calls = [];
+  if (!Array.isArray(db.mobileCommands)) db.mobileCommands = [];
+  if (!db.settings) db.settings = { dailyLimit: 80 };
+  return db;
 }
 
 function write(db) {
@@ -42,6 +47,7 @@ export function addLead(input) {
     score: Number(input.score || 50),
     nextCallAt: input.nextCallAt || new Date().toISOString(),
     notes: input.notes || '',
+    doNotCall: Boolean(input.doNotCall),
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString()
   };
@@ -78,7 +84,7 @@ export function listCalls() {
 export function dashboard() {
   const db = read();
   const now = Date.now();
-  const due = db.leads.filter(x => new Date(x.nextCallAt).getTime() <= now);
+  const due = db.leads.filter(x => x.nextCallAt && new Date(x.nextCallAt).getTime() <= now);
   return {
     totalLeads: db.leads.length,
     dueToday: due.length,
@@ -92,6 +98,34 @@ export function dashboard() {
 export function nextQueue(limit = 20) {
   const now = Date.now();
   return listLeads()
-    .filter(x => ['new','followup','warm','hot'].includes(x.stage) && new Date(x.nextCallAt).getTime() <= now)
+    .filter(x => !x.doNotCall && ['new','followup','warm','hot'].includes(x.stage) && x.nextCallAt && new Date(x.nextCallAt).getTime() <= now)
     .slice(0, limit);
+}
+
+export function enqueueMobileCommand(deviceId, command) {
+  const db = read();
+  const item = {
+    id: randomUUID(),
+    deviceId: deviceId || 'a26',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    ...command
+  };
+  db.mobileCommands.push(item);
+  write(db);
+  return item;
+}
+
+export function nextMobileCommand(deviceId) {
+  const db = read();
+  return db.mobileCommands.find(x => x.status === 'pending' && x.deviceId === deviceId) || null;
+}
+
+export function completeMobileCommand(id, patch = {}) {
+  const db = read();
+  const item = db.mobileCommands.find(x => x.id === id);
+  if (!item) return null;
+  Object.assign(item, patch, { completedAt: new Date().toISOString() });
+  write(db);
+  return item;
 }
