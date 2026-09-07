@@ -1,0 +1,14 @@
+PRAGMA foreign_keys=ON;
+CREATE TABLE accounts(id TEXT PRIMARY KEY,name TEXT NOT NULL,type TEXT,phone TEXT,city TEXT,address TEXT,source TEXT,notes TEXT,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,deleted_at TEXT);
+CREATE TABLE contacts(id TEXT PRIMARY KEY,account_id TEXT,name TEXT NOT NULL,role TEXT,mobile TEXT,email TEXT,notes TEXT,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,deleted_at TEXT,FOREIGN KEY(account_id) REFERENCES accounts(id));
+CREATE TABLE opportunities(id TEXT PRIMARY KEY,account_id TEXT,title TEXT NOT NULL,stage TEXT NOT NULL,amount_irr INTEGER NOT NULL DEFAULT 0,probability INTEGER NOT NULL DEFAULT 0,next_action TEXT,next_action_at TEXT,last_activity_at TEXT,lost_reason TEXT,status TEXT NOT NULL DEFAULT 'open',created_at TEXT NOT NULL,updated_at TEXT NOT NULL,FOREIGN KEY(account_id) REFERENCES accounts(id),CHECK(probability BETWEEN 0 AND 100));
+CREATE TABLE projects(id TEXT PRIMARY KEY,account_id TEXT,opportunity_id TEXT,title TEXT NOT NULL,address TEXT,system_type TEXT,current_stage TEXT,status TEXT NOT NULL DEFAULT 'active',contract_amount_irr INTEGER NOT NULL DEFAULT 0,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,FOREIGN KEY(account_id) REFERENCES accounts(id),FOREIGN KEY(opportunity_id) REFERENCES opportunities(id));
+CREATE TABLE project_contacts(project_id TEXT NOT NULL,contact_id TEXT NOT NULL,role TEXT NOT NULL,PRIMARY KEY(project_id,contact_id,role),FOREIGN KEY(project_id) REFERENCES projects(id),FOREIGN KEY(contact_id) REFERENCES contacts(id));
+CREATE TABLE activities(id TEXT PRIMARY KEY,account_id TEXT,opportunity_id TEXT,project_id TEXT,contact_id TEXT,type TEXT NOT NULL,subject TEXT NOT NULL,details TEXT,due_at TEXT,completed_at TEXT,result TEXT,next_action TEXT,next_action_at TEXT,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,FOREIGN KEY(account_id) REFERENCES accounts(id),FOREIGN KEY(opportunity_id) REFERENCES opportunities(id),FOREIGN KEY(project_id) REFERENCES projects(id),FOREIGN KEY(contact_id) REFERENCES contacts(id));
+CREATE TABLE stage_history(id TEXT PRIMARY KEY,entity_type TEXT NOT NULL,entity_id TEXT NOT NULL,from_stage TEXT,to_stage TEXT NOT NULL,changed_at TEXT NOT NULL,notes TEXT);
+CREATE TABLE quotes(id TEXT PRIMARY KEY,opportunity_id TEXT,project_id TEXT,quote_no TEXT NOT NULL,version INTEGER NOT NULL DEFAULT 1,amount_irr INTEGER NOT NULL,status TEXT NOT NULL DEFAULT 'draft',issued_at TEXT,created_at TEXT NOT NULL,updated_at TEXT NOT NULL,FOREIGN KEY(opportunity_id) REFERENCES opportunities(id),FOREIGN KEY(project_id) REFERENCES projects(id));
+CREATE INDEX idx_contacts_account ON contacts(account_id);
+CREATE INDEX idx_opps_account_stage ON opportunities(account_id,stage);
+CREATE INDEX idx_activities_due ON activities(completed_at,due_at);
+CREATE INDEX idx_projects_account ON projects(account_id);
+CREATE INDEX idx_stage_history_entity ON stage_history(entity_type,entity_id,changed_at);
