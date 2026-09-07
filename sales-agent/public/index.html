@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>NamiWin Smart Sales</title>
+<style>
+:root{font-family:Tahoma,Arial,sans-serif;background:#f5f6f8;color:#171717}body{margin:0}.wrap{max-width:1180px;margin:auto;padding:22px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px}.brand{font-size:26px;font-weight:800}.sub{color:#666;margin-top:4px}.grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:20px 0}.card{background:#fff;border-radius:16px;padding:18px;box-shadow:0 2px 12px #0000000a}.n{font-size:30px;font-weight:800}.lbl{font-size:13px;color:#666}.actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:0;border-radius:10px;padding:11px 16px;cursor:pointer;font-weight:700}.primary{background:#111;color:#fff}.soft{background:#e9eaed}.panel{background:#fff;border-radius:16px;padding:18px;margin-top:15px;box-shadow:0 2px 12px #0000000a}table{width:100%;border-collapse:collapse}th,td{padding:12px 9px;border-bottom:1px solid #eee;text-align:right;font-size:14px}.badge{display:inline-block;padding:4px 8px;border-radius:999px;background:#eee;font-size:12px}.hot{background:#ffe0e0}.warm{background:#fff0c6}.form{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}input,select{padding:11px;border:1px solid #ddd;border-radius:9px}.toast{position:fixed;left:20px;bottom:20px;background:#111;color:#fff;padding:12px 16px;border-radius:10px;display:none}@media(max-width:850px){.grid{grid-template-columns:repeat(2,1fr)}.form{grid-template-columns:1fr 1fr}.top{align-items:flex-start;flex-direction:column}table{font-size:12px}.panel{overflow:auto}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><div><div class="brand">NAMI WIN — بازاریاب هوشمند</div><div class="sub">سرنخ، تماس، تحلیل مکالمه و پیگیری خودکار</div></div><div class="actions"><button class="btn primary" onclick="runCampaign()">شروع تماس‌های امروز</button><button class="btn soft" onclick="loadAll()">بروزرسانی</button></div></div>
+  <div class="grid" id="stats"></div>
+  <div class="panel">
+    <b>افزودن سرنخ</b>
+    <div class="form">
+      <input id="company" placeholder="نام شرکت/کارفرما">
+      <input id="contact" placeholder="نام شخص">
+      <input id="phone" placeholder="شماره تماس">
+      <input id="category" placeholder="حوزه فعالیت" value="ساختمان">
+      <button class="btn primary" onclick="addLead()">ثبت سرنخ</button>
+    </div>
+  </div>
+  <div class="panel"><b>صف و بانک سرنخ‌ها</b><table><thead><tr><th>شرکت</th><th>شخص</th><th>شماره</th><th>حوزه</th><th>امتیاز</th><th>وضعیت</th><th>خلاصه آخر</th><th>عملیات</th></tr></thead><tbody id="leads"></tbody></table></div>
+  <div class="panel"><b>آخرین تماس‌ها</b><table><thead><tr><th>زمان</th><th>شماره</th><th>وضعیت</th><th>سرویس</th><th>مدت</th></tr></thead><tbody id="calls"></tbody></table></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+const api=(u,o={})=>fetch(u,{headers:{'content-type':'application/json'},...o}).then(async r=>{const x=await r.json();if(!r.ok)throw new Error(x.error||'خطا');return x});
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function toast(t){const e=document.getElementById('toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2500)}
+async function loadAll(){const [d,l,c]=await Promise.all([api('/api/dashboard'),api('/api/leads'),api('/api/calls')]);stats.innerHTML=[['کل سرنخ',d.totalLeads],['سررسید تماس',d.dueToday],['داغ',d.hot],['گرم',d.warm],['کل تماس',d.calls]].map(x=>`<div class=card><div class=n>${x[1]}</div><div class=lbl>${x[0]}</div></div>`).join('');leads.innerHTML=l.map(x=>`<tr><td>${esc(x.company)}</td><td>${esc(x.contact)}</td><td>${esc(x.phone)}</td><td>${esc(x.category)}</td><td>${x.score??0}</td><td><span class="badge ${x.stage==='hot'?'hot':x.stage==='warm'?'warm':''}">${esc(x.stage)}</span></td><td>${esc(x.lastSummary||x.notes||'—')}</td><td><button class="btn soft" onclick="callLead('${x.id}')">تماس</button></td></tr>`).join('');calls.innerHTML=c.slice(0,30).map(x=>`<tr><td>${new Date(x.createdAt).toLocaleString('fa-IR')}</td><td>${esc(x.phone)}</td><td>${esc(x.status)}</td><td>${esc(x.provider)}</td><td>${x.durationSec||0} ثانیه</td></tr>`).join('')}
+async function addLead(){const body={company:company.value,contact:contact.value,phone:phone.value,category:category.value};if(!body.phone)return toast('شماره تماس لازم است');await api('/api/leads',{method:'POST',body:JSON.stringify(body)});company.value=contact.value=phone.value='';toast('سرنخ ثبت شد');loadAll()}
+async function callLead(id){await api(`/api/leads/${id}/call`,{method:'POST'});toast('تماس در صف قرار گرفت');loadAll()}
+async function runCampaign(){const r=await api('/api/campaign/run',{method:'POST',body:JSON.stringify({limit:80})});toast(`${r.queued} تماس در صف قرار گرفت`);loadAll()}
+loadAll().catch(e=>toast(e.message));
+</script>
+</body>
+</html>
