@@ -16,6 +16,7 @@
 
         <activity android:name=".VoiceTestActivity" android:exported="false" />
         <activity android:name=".LiveCallLabActivity" android:exported="false" />
+        <activity android:name=".VoipAiCallActivity" android:exported="false" />
 
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
