@@ -1,6 +1,7 @@
 package com.namiwin.salesgateway;
 
 import android.telecom.Call;
+import android.telecom.CallAudioState;
 import android.telecom.InCallService;
 
 public class NamiInCallService extends InCallService {
@@ -28,7 +29,7 @@ public class NamiInCallService extends InCallService {
 
     public static boolean routeSpeaker(){
         NamiInCallService s=instance; if(s==null)return false;
-        try{ s.setAudioRoute(InCallService.ROUTE_SPEAKER); return true; }catch(Exception e){return false;}
+        try{ s.setAudioRoute(CallAudioState.ROUTE_SPEAKER); return true; }catch(Exception e){return false;}
     }
 
     public static boolean takeOver(){
