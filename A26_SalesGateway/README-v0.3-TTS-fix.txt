@@ -1,0 +1,1 @@
+v0.3 fixes TTS readiness, Persian voice selection, fallback voice, test-sound control and explicit speak error reporting.
