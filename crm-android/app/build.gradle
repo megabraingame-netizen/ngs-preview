@@ -12,3 +12,5 @@ android {
         versionName '1.0'
     }
 }
+
+// NamiWin CRM v1 Android build
