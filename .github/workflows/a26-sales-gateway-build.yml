@@ -2,7 +2,7 @@ name: Build A26 Sales Gateway APK
 
 on:
   push:
-    branches: [ "a26-sales-gateway-v0.1", "main" ]
+    branches: [ "a26-sales-gateway-v0.1", "a26-ai-voice-test-v0.2", "main" ]
     paths:
       - "A26_SalesGateway/**"
       - ".github/workflows/a26-sales-gateway-build.yml"
@@ -26,9 +26,9 @@ jobs:
       - name: Build release APK
         run: gradle -p A26_SalesGateway :app:assembleRelease --stacktrace
       - name: Rename APK
-        run: cp A26_SalesGateway/app/build/outputs/apk/release/app-release.apk NamiWin_A26_SalesGateway_v0.1.apk
+        run: cp A26_SalesGateway/app/build/outputs/apk/release/app-release.apk NamiWin_A26_SalesGateway_v0.2_AI_Test.apk
       - uses: actions/upload-artifact@v4
         with:
-          name: NamiWin-A26-SalesGateway-v0.1
-          path: NamiWin_A26_SalesGateway_v0.1.apk
+          name: NamiWin-A26-SalesGateway-v0.2-AI-Test
+          path: NamiWin_A26_SalesGateway_v0.2_AI_Test.apk
           if-no-files-found: error

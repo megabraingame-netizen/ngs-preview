@@ -3,7 +3,6 @@ package com.namiwin.salesgateway;
 import android.Manifest;
 import android.app.Activity;
 import android.app.role.RoleManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -39,8 +38,10 @@ public class MainActivity extends Activity {
     private void buildUi(){
         ScrollView sc=new ScrollView(this);
         LinearLayout root=new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setPadding(32,32,32,32);
-        TextView title=new TextView(this); title.setText("NAMI WIN — A26 Sales Gateway"); title.setTextSize(24); title.setGravity(Gravity.CENTER_HORIZONTAL); root.addView(title);
-        TextView sub=new TextView(this); sub.setText("تماس با سیم‌کارت + اتصال به CRM + تحویل مکالمه به امید"); sub.setGravity(Gravity.CENTER_HORIZONTAL); sub.setPadding(0,8,0,24); root.addView(sub);
+        TextView title=new TextView(this); title.setText("NAMI WIN — A26 Sales Gateway v0.2"); title.setTextSize(24); title.setGravity(Gravity.CENTER_HORIZONTAL); root.addView(title);
+        TextView sub=new TextView(this); sub.setText("تماس با سیم‌کارت + اتصال به CRM + تست مکالمه صوتی AI"); sub.setGravity(Gravity.CENTER_HORIZONTAL); sub.setPadding(0,8,0,24); root.addView(sub);
+
+        Button aiTest=button("🎙 شروع تست صحبت با AI",v->startActivity(new Intent(this,VoiceTestActivity.class))); root.addView(aiTest);
 
         serverUrl=new EditText(this); serverUrl.setHint("آدرس CRM، مثال: http://192.168.1.10:8787"); serverUrl.setText(prefs.getString("server","")); root.addView(serverUrl);
         Button save=button("ذخیره و روشن کردن Gateway",v->{prefs.edit().putString("server",serverUrl.getText().toString().trim()).apply(); startGateway();}); root.addView(save);
@@ -52,7 +53,7 @@ public class MainActivity extends Activity {
         Button hold=button("Hold / Resume تماس",v->{ boolean ok=NamiInCallService.toggleHold(); Toast.makeText(this,ok?"فرمان انجام شد":"Hold در این تماس/اپراتور در دسترس نیست",Toast.LENGTH_LONG).show();}); root.addView(hold);
 
         status=new TextView(this); status.setPadding(0,24,0,0); status.setText("Device ID: "+deviceId()+"\nGateway: خاموش"); root.addView(status);
-        TextView note=new TextView(this); note.setPadding(0,28,0,0); note.setText("نکته: شماره‌گیری سلولی از خود A26 انجام می‌شود. دسترسی AI به صدای دوطرف تماس سلولی توسط Android محدود است؛ برای AI صوتی کامل و Transfer واقعی باید GSM/LTE Gateway یا SIP Bridge متصل شود."); root.addView(note);
+        TextView note=new TextView(this); note.setPadding(0,28,0,0); note.setText("تست AI بالا، مکالمه فارسی را با میکروفن و بلندگوی گوشی اجرا می‌کند تا همین الان صدای دستیار و رفت‌وبرگشت گفتگو را امتحان کنید. این تست داخل تماس سیم‌کارت نیست. تزریق صدای AI به تماس سلولی واقعی روی Android محدود است و برای نسخه عملیاتی کامل باید مسیر صوت از GSM/LTE Gateway یا SIP Bridge عبور کند."); root.addView(note);
         sc.addView(root); setContentView(sc);
     }
 
@@ -63,6 +64,7 @@ public class MainActivity extends Activity {
             java.util.ArrayList<String> p=new java.util.ArrayList<>();
             if(checkSelfPermission(Manifest.permission.CALL_PHONE)!=PackageManager.PERMISSION_GRANTED)p.add(Manifest.permission.CALL_PHONE);
             if(checkSelfPermission(Manifest.permission.READ_PHONE_STATE)!=PackageManager.PERMISSION_GRANTED)p.add(Manifest.permission.READ_PHONE_STATE);
+            if(checkSelfPermission(Manifest.permission.RECORD_AUDIO)!=PackageManager.PERMISSION_GRANTED)p.add(Manifest.permission.RECORD_AUDIO);
             if(Build.VERSION.SDK_INT>=33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)!=PackageManager.PERMISSION_GRANTED)p.add(Manifest.permission.POST_NOTIFICATIONS);
             if(!p.isEmpty())requestPermissions(p.toArray(new String[0]),10);
         }
