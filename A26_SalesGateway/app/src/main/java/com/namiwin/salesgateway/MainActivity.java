@@ -38,22 +38,23 @@ public class MainActivity extends Activity {
     private void buildUi(){
         ScrollView sc=new ScrollView(this);
         LinearLayout root=new LinearLayout(this); root.setOrientation(LinearLayout.VERTICAL); root.setPadding(32,32,32,32);
-        TextView title=new TextView(this); title.setText("NAMI WIN — A26 Sales Gateway v0.2"); title.setTextSize(24); title.setGravity(Gravity.CENTER_HORIZONTAL); root.addView(title);
-        TextView sub=new TextView(this); sub.setText("تماس با سیم‌کارت + اتصال به CRM + تست مکالمه صوتی AI"); sub.setGravity(Gravity.CENTER_HORIZONTAL); sub.setPadding(0,8,0,24); root.addView(sub);
+        TextView title=new TextView(this); title.setText("NAMI WIN — A26 Sales Gateway v0.4"); title.setTextSize(24); title.setGravity(Gravity.CENTER_HORIZONTAL); root.addView(title);
+        TextView sub=new TextView(this); sub.setText("تماس با سیم‌کارت + تست مکالمه AI + CRM"); sub.setGravity(Gravity.CENTER_HORIZONTAL); sub.setPadding(0,8,0,20); root.addView(sub);
 
-        Button aiTest=button("🎙 شروع تست صحبت با AI",v->startActivity(new Intent(this,VoiceTestActivity.class))); root.addView(aiTest);
+        Button liveLab=button("☎ تماس واقعی آزمایشی AI با شماره دستی",v->startActivity(new Intent(this,LiveCallLabActivity.class))); root.addView(liveLab);
+        Button aiTest=button("🎙 تست مکالمه AI بدون تماس",v->startActivity(new Intent(this,VoiceTestActivity.class))); root.addView(aiTest);
 
         serverUrl=new EditText(this); serverUrl.setHint("آدرس CRM، مثال: http://192.168.1.10:8787"); serverUrl.setText(prefs.getString("server","")); root.addView(serverUrl);
         Button save=button("ذخیره و روشن کردن Gateway",v->{prefs.edit().putString("server",serverUrl.getText().toString().trim()).apply(); startGateway();}); root.addView(save);
         Button dialer=button("فعال‌سازی به عنوان برنامه تماس پیش‌فرض",v->requestDialerRole()); root.addView(dialer);
 
-        phone=new EditText(this); phone.setHint("شماره برای تست تماس"); phone.setInputType(3); root.addView(phone);
-        Button call=button("تماس با سیم‌کارت",v->placeCall(phone.getText().toString().trim())); root.addView(call);
+        phone=new EditText(this); phone.setHint("شماره برای تماس ساده"); phone.setInputType(3); root.addView(phone);
+        Button call=button("تماس ساده با سیم‌کارت",v->placeCall(phone.getText().toString().trim())); root.addView(call);
         Button takeover=button("ادامه گفتگو را خودم می‌گیرم",v->{ boolean ok=NamiInCallService.takeOver(); Toast.makeText(this,ok?"کنترل تماس به شما داده شد":"تماس قابل کنترل پیدا نشد",Toast.LENGTH_LONG).show();}); root.addView(takeover);
         Button hold=button("Hold / Resume تماس",v->{ boolean ok=NamiInCallService.toggleHold(); Toast.makeText(this,ok?"فرمان انجام شد":"Hold در این تماس/اپراتور در دسترس نیست",Toast.LENGTH_LONG).show();}); root.addView(hold);
 
         status=new TextView(this); status.setPadding(0,24,0,0); status.setText("Device ID: "+deviceId()+"\nGateway: خاموش"); root.addView(status);
-        TextView note=new TextView(this); note.setPadding(0,28,0,0); note.setText("تست AI بالا، مکالمه فارسی را با میکروفن و بلندگوی گوشی اجرا می‌کند تا همین الان صدای دستیار و رفت‌وبرگشت گفتگو را امتحان کنید. این تست داخل تماس سیم‌کارت نیست. تزریق صدای AI به تماس سلولی واقعی روی Android محدود است و برای نسخه عملیاتی کامل باید مسیر صوت از GSM/LTE Gateway یا SIP Bridge عبور کند."); root.addView(note);
+        TextView note=new TextView(this); note.setPadding(0,28,0,0); note.setText("برای تست واقعی، دکمه اول را بزن و شماره را دستی وارد کن. بعد از ACTIVE شدن تماس، برنامه تلاش می‌کند اسپیکر را روشن کند، AI را پخش کند و پاسخ مشتری را از میکروفن بشنود. این مسیر عمداً آزمایشی است تا اکو، تأخیر و محدودیت صدای تماس سلولی A26 مشخص شود."); root.addView(note);
         sc.addView(root); setContentView(sc);
     }
 
