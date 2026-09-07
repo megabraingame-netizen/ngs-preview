@@ -1,0 +1,38 @@
+name: NamiWin CRM v2 CI
+on:
+  push:
+    branches: [namiwin-crm-v2]
+    paths:
+      - 'crm-v2/**'
+      - '.github/workflows/namiwin-crm-v2-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JavaScript syntax check
+        run: |
+          node --check crm-v2/web/app.js
+          node --check crm-v2/web/core.js
+      - name: Validate required UI files
+        run: |
+          test -s crm-v2/web/index.html
+          test -s crm-v2/web/app.css
+          test -s crm-v2/schema.sql
+          grep -q 'Command Center' crm-v2/SPEC.md || grep -q 'Command Center' crm-v2/web/index.html
+          grep -q 'Customer 360' crm-v2/SPEC.md
+      - name: Package browser preview
+        run: |
+          mkdir -p preview
+          cp crm-v2/web/index.html crm-v2/web/app.css crm-v2/web/app.js crm-v2/web/core.js preview/
+          cp crm-v2/SPEC.md preview/README.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NamiWin-CRM-v2-Preview
+          path: preview
+          retention-days: 30
