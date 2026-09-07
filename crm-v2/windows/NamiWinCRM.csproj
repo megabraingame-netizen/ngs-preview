@@ -1,0 +1,3 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+<PropertyGroup><OutputType>WinExe</OutputType><TargetFramework>net48</TargetFramework><UseWindowsForms>true</UseWindowsForms><AssemblyName>NamiWin-CRM-v2</AssemblyName><RootNamespace>NamiWinCRM</RootNamespace><LangVersion>latest</LangVersion><PlatformTarget>AnyCPU</PlatformTarget><Prefer32Bit>false</Prefer32Bit></PropertyGroup>
+</Project>
