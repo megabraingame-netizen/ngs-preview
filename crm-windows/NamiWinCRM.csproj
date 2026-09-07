@@ -6,6 +6,7 @@
     <RootNamespace>NamiWinCRM</RootNamespace>
     <AssemblyName>NamiWin-CRM-Windows-Portable</AssemblyName>
     <LangVersion>latest</LangVersion>
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System.Web.Extensions" />
