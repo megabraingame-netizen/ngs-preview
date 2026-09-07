@@ -1,3 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 <PropertyGroup><OutputType>WinExe</OutputType><TargetFramework>net48</TargetFramework><UseWindowsForms>true</UseWindowsForms><AssemblyName>NamiWin-CRM-v2</AssemblyName><RootNamespace>NamiWinCRM</RootNamespace><LangVersion>latest</LangVersion><PlatformTarget>AnyCPU</PlatformTarget><Prefer32Bit>false</Prefer32Bit></PropertyGroup>
+<ItemGroup>
+  <EmbeddedResource Include="..\web\index.html"><LogicalName>web.index.html</LogicalName></EmbeddedResource>
+  <EmbeddedResource Include="..\web\app.css"><LogicalName>web.app.css</LogicalName></EmbeddedResource>
+  <EmbeddedResource Include="..\web\app.js"><LogicalName>web.app.js</LogicalName></EmbeddedResource>
+</ItemGroup>
 </Project>
